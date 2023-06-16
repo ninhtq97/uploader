@@ -21,11 +21,8 @@ export class UploaderService {
 
   async accessFile(path: string) {
     try {
-      console.log('Access File');
-
       await fsPromises.access(path, constants.R_OK);
     } catch (exception) {
-      console.log('Throw Access File');
       throw new NotFoundException();
     }
 
@@ -33,11 +30,7 @@ export class UploaderService {
   }
 
   async getStream(path: string): Promise<ReadStream> {
-    console.log('Path:', path);
-
     const standardPath = this.getAbsPath(path);
-
-    console.log('Standard Path:', standardPath);
 
     await this.accessFile(standardPath);
     return createReadStream(standardPath, { autoClose: true });
