@@ -1,5 +1,5 @@
 {
-  "name": "uploader",
+  "name": "@nestjs-module/uploader",
   "version": "0.0.1",
   "description": "NestJS - a uploader module",
   "keywords": [
