@@ -11,7 +11,7 @@ import {
 import { DiskStorageOptions, diskStorage } from 'multer';
 import { MIME_TYPE } from '../constants/uploader.constant';
 import { UploaderService } from '../uploader.service';
-import { editFileName, fileFilter, makeDes } from '../utils/uploader.util';
+import { convertPath, editFileName, fileFilter, makeDes } from '../utils/uploader.util';
 
 interface FilesInterceptorOptions {
   fieldName?: string;
@@ -38,7 +38,7 @@ export function UploaderInterceptor(
         storage: diskStorage({
           destination:
             options.destination ||
-            makeDes(`${filesDest}/${options.path || ''}`),
+            makeDes(convertPath(`${filesDest}/${options.path || ''}`)),
           filename: options.filename || editFileName,
         }),
         fileFilter:
