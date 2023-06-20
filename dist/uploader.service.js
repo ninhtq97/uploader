@@ -26,19 +26,15 @@ let UploaderService = exports.UploaderService = class UploaderService {
     }
     async accessFile(path) {
         try {
-            console.log('Access File');
             await fs_1.promises.access(path, fs_1.constants.R_OK);
         }
         catch (exception) {
-            console.log('Throw Access File');
             throw new common_1.NotFoundException();
         }
         return true;
     }
     async getStream(path) {
-        console.log('Path:', path);
         const standardPath = this.getAbsPath(path);
-        console.log('Standard Path:', standardPath);
         await this.accessFile(standardPath);
         return (0, fs_1.createReadStream)(standardPath, { autoClose: true });
     }

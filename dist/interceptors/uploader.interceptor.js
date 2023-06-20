@@ -24,7 +24,7 @@ function UploaderInterceptor(options) {
             const multerOptions = {
                 storage: (0, multer_1.diskStorage)({
                     destination: options.destination ||
-                        (0, uploader_util_1.makeDes)(`${filesDest}/${options.path || ''}`),
+                        (0, uploader_util_1.makeDes)((0, uploader_util_1.convertPath)(`${filesDest}/${options.path || ''}`)),
                     filename: options.filename || uploader_util_1.editFileName,
                 }),
                 fileFilter: options.fileFilter ||
