@@ -104,7 +104,7 @@ export function UploaderInterceptor({
       const { ext, mime } = await fromBuffer(buffer);
 
       if (!acceptMimetype.includes(mime)) {
-        throw new BadRequestException('Invalid mime type');
+        throw new BadRequestException('Invalid real mime type');
       }
 
       if (renameIfMimeWrong) {
