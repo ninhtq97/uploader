@@ -51,6 +51,7 @@ export const fileFilter =
     file: Express.Multer.File,
     callback: (error: Error, acceptFile: boolean) => void,
   ) => {
+    console.log('Accept Mimetype:', acceptMimetype);
     console.log('Filter File:', file);
 
     if (!acceptMimetype || !acceptMimetype.includes(file.mimetype)) {
