@@ -87,7 +87,7 @@ export function UploaderInterceptor(
       console.log('Ctx:', ctx);
 
       const req = ctx.getRequest();
-      console.log('Req:', req.file);
+      console.log('Req:', req.files);
 
       return this.fileInterceptor.intercept(context, next);
     }
