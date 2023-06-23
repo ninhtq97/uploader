@@ -37,6 +37,7 @@ const convertPath = (path) => {
 };
 exports.convertPath = convertPath;
 const fileFilter = (acceptMimetype) => (req, file, callback) => {
+    console.log('Filter File:', file);
     if (!acceptMimetype || !acceptMimetype.includes(file.mimetype)) {
         return callback(new common_1.BadRequestException('Invalid mime type'), false);
     }
