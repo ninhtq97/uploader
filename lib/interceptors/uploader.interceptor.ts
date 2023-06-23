@@ -102,9 +102,13 @@ export function UploaderInterceptor(
       console.log('Ext:', ext);
       console.log('Mime:', mime);
 
-      const filename = basename(file.filename, extname(file.filename));
-      console.log('filename:', filename);
-      console.log('New Filename:', `${filename}.${ext}`);
+      const oldFilename = basename(file.filename, extname(file.filename));
+      console.log('Old Filename:', oldFilename);
+      const newFilename = `${oldFilename}.${ext}`;
+      console.log('New Filename:', oldFilename);
+      file.mimetype = mime;
+      file.filename = newFilename;
+      file.path = `${file.destination}/${newFilename}`;
 
       return intercept;
     }
