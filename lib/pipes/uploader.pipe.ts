@@ -1,26 +1,38 @@
-import { FileTypeValidator } from '@nestjs/common';
+import { FileTypeValidatorOptions, FileValidator } from '@nestjs/common';
+import { fileTypeFromStream } from 'file-type';
+import { UploaderService } from '../uploader.service';
 
-interface IFile {
-  mimetype: string;
-  size: number;
-}
+export class UploaderFileTypeValidator extends FileValidator<FileTypeValidatorOptions> {
+  constructor(
+    private uploaderService: UploaderService,
+    validationOptions: FileTypeValidatorOptions,
+  ) {
+    super(validationOptions);
+  }
 
-export class UploaderFileTypeValidator extends FileTypeValidator {
   buildErrorMessage(): string {
     return `Validation failed (expected type is ${this.validationOptions.fileType})`;
   }
 
-  isValid<TFile extends IFile = any>(file?: TFile): boolean {
+  async isValid<TFile extends Express.Multer.File = any>(
+    file?: TFile,
+  ): Promise<boolean> {
     if (!this.validationOptions) {
       return true;
     }
 
     console.log('Pipe File:', file);
+    const stream = await this.uploaderService.getStream(file.path);
+
+    const { ext, mime } = await fileTypeFromStream(stream);
+
+    console.log('Ext:', ext);
+    console.log('Mime:', mime);
 
     return (
       !!file &&
       'mimetype' in file &&
-      !!file.mimetype.match(this.validationOptions.fileType)
+      !!mime.match(this.validationOptions.fileType)
     );
   }
 }
