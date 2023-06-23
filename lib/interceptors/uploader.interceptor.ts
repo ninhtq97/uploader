@@ -1,4 +1,11 @@
-import { Injectable, NestInterceptor, Type, mixin } from '@nestjs/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+  Type,
+  mixin,
+} from '@nestjs/common';
 import {
   FileFieldsInterceptor,
   FileInterceptor,
@@ -75,8 +82,17 @@ export function UploaderInterceptor(
       }
     }
 
-    intercept(...args: Parameters<NestInterceptor['intercept']>) {
-      return this.fileInterceptor.intercept(...args);
+    intercept(context: ExecutionContext, next: CallHandler) {
+      const ctx = context.switchToHttp();
+      console.log('Ctx:', ctx);
+
+      const req = ctx.getRequest();
+      const res = ctx.getResponse();
+
+      console.log('Req:', req);
+      console.log('Res:', res);
+
+      return this.fileInterceptor.intercept(context, next);
     }
   }
   return mixin(Interceptor);

@@ -43,8 +43,14 @@ function UploaderInterceptor(options) {
                 this.fileInterceptor = new ((0, platform_express_1.FileInterceptor)(options.fieldName, multerOptions))();
             }
         }
-        intercept(...args) {
-            return this.fileInterceptor.intercept(...args);
+        intercept(context, next) {
+            const ctx = context.switchToHttp();
+            console.log('Ctx:', ctx);
+            const req = ctx.getRequest();
+            const res = ctx.getResponse();
+            console.log('Req:', req);
+            console.log('Res:', res);
+            return this.fileInterceptor.intercept(context, next);
         }
     };
     Interceptor = __decorate([
