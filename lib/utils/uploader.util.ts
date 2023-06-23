@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { Request } from 'express';
+import { fileTypeFromBuffer } from 'file-type';
 import { promises as fsPromises } from 'fs';
 import { customAlphabet, urlAlphabet } from 'nanoid';
 import { basename, dirname, extname, join, resolve } from 'path';
@@ -18,12 +19,14 @@ export const convertPath = (path: string): string => {
 
 export const fileFilter =
   (acceptMimetype: Array<string>) =>
-  (
+  async (
     req: Request,
     file: Express.Multer.File,
     callback: (error: Error, acceptFile: boolean) => void,
   ) => {
-    if (!acceptMimetype || !acceptMimetype.includes(file.mimetype)) {
+    console.log('Filter file:', file);
+    const { mime } = await fileTypeFromBuffer(file.buffer);
+    if (!acceptMimetype || !acceptMimetype.includes(mime)) {
       return callback(new BadRequestException('Invalid mime type'), false);
     }
 

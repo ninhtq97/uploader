@@ -11,7 +11,12 @@ import {
 import { DiskStorageOptions, diskStorage } from 'multer';
 import { MIME_TYPE } from '../constants/uploader.constant';
 import { UploaderService } from '../uploader.service';
-import { convertPath, editFileName, fileFilter, makeDes } from '../utils/uploader.util';
+import {
+  convertPath,
+  editFileName,
+  fileFilter,
+  makeDes,
+} from '../utils/uploader.util';
 
 interface FilesInterceptorOptions {
   fieldName?: string;

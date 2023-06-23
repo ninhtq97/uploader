@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeDes = exports.editFileName = exports.fileFilter = exports.convertPath = void 0;
 const common_1 = require("@nestjs/common");
+const file_type_1 = require("file-type");
 const fs_1 = require("fs");
 const nanoid_1 = require("nanoid");
 const path_1 = require("path");
@@ -15,8 +16,10 @@ const convertPath = (path) => {
     return `${dirPath}/${filename}`;
 };
 exports.convertPath = convertPath;
-const fileFilter = (acceptMimetype) => (req, file, callback) => {
-    if (!acceptMimetype || !acceptMimetype.includes(file.mimetype)) {
+const fileFilter = (acceptMimetype) => async (req, file, callback) => {
+    console.log('Filter file:', file);
+    const { mime } = await (0, file_type_1.fileTypeFromBuffer)(file.buffer);
+    if (!acceptMimetype || !acceptMimetype.includes(mime)) {
         return callback(new common_1.BadRequestException('Invalid mime type'), false);
     }
     callback(null, true);
