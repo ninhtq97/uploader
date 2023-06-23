@@ -95,22 +95,17 @@ export function UploaderInterceptor(
       const intercept = await this.fileInterceptor.intercept(context, next);
 
       if (options.renameIfMimeWrong) {
-        const { file } = req;
-        console.log('File:', file);
+        let { file } = req;
 
         const buffer = await readChunk(file.path, { length: 4100 });
-
         const { ext, mime } = await fromBuffer(buffer);
 
-        const oldFilename = basename(file.filename, extname(file.filename));
-        console.log('Old Filename:', oldFilename);
-        const newFilename = `${oldFilename}.${ext}`;
-        console.log('New Filename:', newFilename);
-        file.mimetype = mime;
-        file.filename = newFilename;
-        const newPath = `${file.destination}/${newFilename}`;
-        await rename(file.path, newPath);
-        file.path = newPath;
+        const name = basename(file.filename, extname(file.filename));
+        const filename = `${name}.${ext}`;
+        const path = `${file.destination}/${filename}`;
+
+        await rename(file.path, path);
+        file = { ...file, mimetype: mime, filename, path: path };
       }
 
       return intercept;
