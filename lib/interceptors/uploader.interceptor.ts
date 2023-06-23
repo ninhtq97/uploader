@@ -17,6 +17,7 @@ import {
 } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { Request } from 'express';
 import { fromBuffer } from 'file-type';
+import { rename } from 'fs/promises';
 import { DiskStorageOptions, diskStorage } from 'multer';
 import { basename, extname } from 'path';
 import { MIME_TYPE } from '../constants/uploader.constant';
@@ -38,6 +39,7 @@ interface FilesInterceptorOptions {
   fileFilter?: MulterOptions['fileFilter'];
   destination?: DiskStorageOptions['destination'];
   filename?: DiskStorageOptions['filename'];
+  renameIfMimeWrong?: boolean;
 }
 
 export function UploaderInterceptor(
@@ -92,23 +94,24 @@ export function UploaderInterceptor(
 
       const intercept = await this.fileInterceptor.intercept(context, next);
 
-      const { file } = req;
-      console.log('File:', file);
+      if (options.renameIfMimeWrong) {
+        const { file } = req;
+        console.log('File:', file);
 
-      const buffer = await readChunk(file.path, { length: 4100 });
+        const buffer = await readChunk(file.path, { length: 4100 });
 
-      const { ext, mime } = await fromBuffer(buffer);
+        const { ext, mime } = await fromBuffer(buffer);
 
-      console.log('Ext:', ext);
-      console.log('Mime:', mime);
-
-      const oldFilename = basename(file.filename, extname(file.filename));
-      console.log('Old Filename:', oldFilename);
-      const newFilename = `${oldFilename}.${ext}`;
-      console.log('New Filename:', oldFilename);
-      file.mimetype = mime;
-      file.filename = newFilename;
-      file.path = `${file.destination}/${newFilename}`;
+        const oldFilename = basename(file.filename, extname(file.filename));
+        console.log('Old Filename:', oldFilename);
+        const newFilename = `${oldFilename}.${ext}`;
+        console.log('New Filename:', newFilename);
+        file.mimetype = mime;
+        file.filename = newFilename;
+        const newPath = `${file.destination}/${newFilename}`;
+        await rename(file.path, newPath);
+        file.path = newPath;
+      }
 
       return intercept;
     }

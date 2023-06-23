@@ -10,6 +10,7 @@ interface FilesInterceptorOptions {
     fileFilter?: MulterOptions['fileFilter'];
     destination?: DiskStorageOptions['destination'];
     filename?: DiskStorageOptions['filename'];
+    renameIfMimeWrong?: boolean;
 }
 export declare function UploaderInterceptor(options: FilesInterceptorOptions): Type<NestInterceptor>;
 export {};
