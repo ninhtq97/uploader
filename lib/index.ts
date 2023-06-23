@@ -11,6 +11,9 @@ export { UploaderOptionsFactory } from './interfaces/uploader-options-factory';
 /** Interceptors **/
 export { UploaderInterceptor } from './interceptors/uploader.interceptor';
 
+/** Pipes **/
+export { UploaderFileTypeValidator } from './pipes/uploader.pipe';
+
 /** Utils **/
 export { editFileName, fileFilter, makeDes } from './utils/uploader.util';
 
