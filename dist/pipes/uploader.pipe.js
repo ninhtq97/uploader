@@ -14,7 +14,7 @@ class UploaderFileTypeValidator extends common_1.FileValidator {
         }
         console.log('Pipe File:', file);
         const buffer = await (0, utils_1.readChunk)(file.path, { length: 4100 });
-        console.log(await (0, file_type_1.fileTypeFromBuffer)(buffer));
+        console.log(await (0, file_type_1.fromBuffer)(buffer));
         return !!file && 'mimetype' in file;
     }
 }
