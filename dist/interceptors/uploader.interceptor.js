@@ -52,7 +52,8 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
             const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
             const { ext, mime } = await (0, file_type_1.fromBuffer)(buffer);
             if (!acceptMimetype.includes(mime)) {
-                throw new common_1.BadRequestException('Invalid real mime type');
+                await (0, promises_1.unlink)(file.path);
+                throw new common_1.BadRequestException('Invalid original mime type');
             }
             if (renameIfMimeWrong) {
                 const name = (0, path_1.basename)(file.filename, (0, path_1.extname)(file.filename));

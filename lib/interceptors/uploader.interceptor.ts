@@ -18,7 +18,7 @@ import {
 } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { Request } from 'express';
 import { fromBuffer } from 'file-type';
-import { rename } from 'fs/promises';
+import { rename, unlink } from 'fs/promises';
 import { DiskStorageOptions, diskStorage } from 'multer';
 import { basename, extname } from 'path';
 import { MIME_TYPE } from '../constants/uploader.constant';
@@ -104,7 +104,8 @@ export function UploaderInterceptor({
       const { ext, mime } = await fromBuffer(buffer);
 
       if (!acceptMimetype.includes(mime)) {
-        throw new BadRequestException('Invalid real mime type');
+        await unlink(file.path);
+        throw new BadRequestException('Invalid original mime type');
       }
 
       if (renameIfMimeWrong) {
