@@ -26,6 +26,7 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
         constructor(uploaderService) {
             this.uploaderService = uploaderService;
             const filesDest = this.uploaderService.uploaderOptions.dest;
+            console.log('Interceptor Accept Mimetype:', acceptMimetype);
             const multerOptions = {
                 storage: (0, multer_1.diskStorage)({
                     destination: destination || (0, uploader_util_1.makeDes)((0, uploader_util_1.convertPath)(`${filesDest}/${path || ''}`)),

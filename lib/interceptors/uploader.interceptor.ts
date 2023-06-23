@@ -63,6 +63,8 @@ export function UploaderInterceptor({
     constructor(private readonly uploaderService: UploaderService) {
       const filesDest = this.uploaderService.uploaderOptions.dest;
 
+      console.log('Interceptor Accept Mimetype:', acceptMimetype);
+
       const multerOptions: MulterOptions = {
         storage: diskStorage({
           destination:
