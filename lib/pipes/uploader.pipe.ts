@@ -1,15 +1,8 @@
 import { FileTypeValidatorOptions, FileValidator } from '@nestjs/common';
-import { fileTypeFromStream } from 'file-type';
-import { UploaderService } from '../uploader.service';
+import { fileTypeFromBuffer } from 'file-type';
+import { readChunk } from '../utils';
 
 export class UploaderFileTypeValidator extends FileValidator<FileTypeValidatorOptions> {
-  constructor(
-    private uploaderService: UploaderService,
-    validationOptions: FileTypeValidatorOptions,
-  ) {
-    super(validationOptions);
-  }
-
   buildErrorMessage(): string {
     return `Validation failed (expected type is ${this.validationOptions.fileType})`;
   }
@@ -22,17 +15,10 @@ export class UploaderFileTypeValidator extends FileValidator<FileTypeValidatorOp
     }
 
     console.log('Pipe File:', file);
-    const stream = await this.uploaderService.getStream(file.path);
+    const buffer = await readChunk(file.path, { length: 4100 });
 
-    const { ext, mime } = await fileTypeFromStream(stream);
+    console.log(await fileTypeFromBuffer(buffer));
 
-    console.log('Ext:', ext);
-    console.log('Mime:', mime);
-
-    return (
-      !!file &&
-      'mimetype' in file &&
-      !!mime.match(this.validationOptions.fileType)
-    );
+    return !!file && 'mimetype' in file;
   }
 }
