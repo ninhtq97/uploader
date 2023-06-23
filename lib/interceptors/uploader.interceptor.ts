@@ -15,7 +15,10 @@ import {
   MulterField,
   MulterOptions,
 } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { Request } from 'express';
+import { fromBuffer } from 'file-type';
 import { DiskStorageOptions, diskStorage } from 'multer';
+import { basename, extname } from 'path';
 import { MIME_TYPE } from '../constants/uploader.constant';
 import { UploaderService } from '../uploader.service';
 import {
@@ -23,6 +26,7 @@ import {
   editFileName,
   fileFilter,
   makeDes,
+  readChunk,
 } from '../utils/uploader.util';
 
 interface FilesInterceptorOptions {
@@ -84,11 +88,25 @@ export function UploaderInterceptor(
 
     async intercept(context: ExecutionContext, next: CallHandler) {
       const ctx = context.switchToHttp();
+      const req = ctx.getRequest<Request>();
 
-      const iterc = await this.fileInterceptor.intercept(context, next);
-      console.log('Req:', ctx.getRequest());
+      const intercept = await this.fileInterceptor.intercept(context, next);
 
-      return iterc;
+      const { file } = req;
+      console.log('File:', file);
+
+      const buffer = await readChunk(file.path, { length: 4100 });
+
+      const { ext, mime } = await fromBuffer(buffer);
+
+      console.log('Ext:', ext);
+      console.log('Mime:', mime);
+
+      const filename = basename(file.filename, extname(file.filename));
+      console.log('filename:', filename);
+      console.log('New Filename:', `${filename}.${ext}`);
+
+      return intercept;
     }
   }
   return mixin(Interceptor);

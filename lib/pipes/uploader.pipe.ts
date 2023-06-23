@@ -1,6 +1,6 @@
 import { FileTypeValidatorOptions, FileValidator } from '@nestjs/common';
 import { fromBuffer } from 'file-type';
-import { readChunk } from '../utils';
+import { readChunk } from '../utils/uploader.util';
 
 export class UploaderFileTypeValidator extends FileValidator<FileTypeValidatorOptions> {
   buildErrorMessage(): string {

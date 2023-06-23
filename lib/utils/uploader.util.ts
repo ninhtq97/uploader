@@ -4,6 +4,34 @@ import { promises as fsPromises } from 'fs';
 import { customAlphabet, urlAlphabet } from 'nanoid';
 import { basename, dirname, extname, join, resolve } from 'path';
 
+import { open } from 'fs/promises';
+
+export async function readChunk(
+  filePath: string,
+  { length, startPosition = undefined },
+) {
+  const fileDescriptor = await open(filePath, 'r');
+
+  try {
+    const result = await fileDescriptor.read({
+      buffer: Buffer.alloc(length),
+      length,
+      position: startPosition,
+    });
+
+    const bytesRead = result.bytesRead;
+    let buffer = result.buffer;
+
+    if (bytesRead < length) {
+      buffer = buffer.subarray(0, bytesRead);
+    }
+
+    return buffer;
+  } finally {
+    await fileDescriptor.close();
+  }
+}
+
 export const convertPath = (path: string): string => {
   const dirPath = dirname(path)
     .replace(/\W/g, '/')

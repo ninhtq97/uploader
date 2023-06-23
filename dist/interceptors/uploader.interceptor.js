@@ -12,7 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UploaderInterceptor = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
+const file_type_1 = require("file-type");
 const multer_1 = require("multer");
+const path_1 = require("path");
 const uploader_constant_1 = require("../constants/uploader.constant");
 const uploader_service_1 = require("../uploader.service");
 const uploader_util_1 = require("../utils/uploader.util");
@@ -45,9 +47,18 @@ function UploaderInterceptor(options) {
         }
         async intercept(context, next) {
             const ctx = context.switchToHttp();
-            const iterc = await this.fileInterceptor.intercept(context, next);
-            console.log('Req:', ctx.getRequest());
-            return iterc;
+            const req = ctx.getRequest();
+            const intercept = await this.fileInterceptor.intercept(context, next);
+            const { file } = req;
+            console.log('File:', file);
+            const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
+            const { ext, mime } = await (0, file_type_1.fromBuffer)(buffer);
+            console.log('Ext:', ext);
+            console.log('Mime:', mime);
+            const filename = (0, path_1.basename)(file.filename, (0, path_1.extname)(file.filename));
+            console.log('filename:', filename);
+            console.log('New Filename:', `${filename}.${ext}`);
+            return intercept;
         }
     };
     Interceptor = __decorate([

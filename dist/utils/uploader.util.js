@@ -1,10 +1,31 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.makeDes = exports.editFileName = exports.fileFilter = exports.convertPath = void 0;
+exports.makeDes = exports.editFileName = exports.fileFilter = exports.convertPath = exports.readChunk = void 0;
 const common_1 = require("@nestjs/common");
 const fs_1 = require("fs");
 const nanoid_1 = require("nanoid");
 const path_1 = require("path");
+const promises_1 = require("fs/promises");
+async function readChunk(filePath, { length, startPosition = undefined }) {
+    const fileDescriptor = await (0, promises_1.open)(filePath, 'r');
+    try {
+        const result = await fileDescriptor.read({
+            buffer: Buffer.alloc(length),
+            length,
+            position: startPosition,
+        });
+        const bytesRead = result.bytesRead;
+        let buffer = result.buffer;
+        if (bytesRead < length) {
+            buffer = buffer.subarray(0, bytesRead);
+        }
+        return buffer;
+    }
+    finally {
+        await fileDescriptor.close();
+    }
+}
+exports.readChunk = readChunk;
 const convertPath = (path) => {
     const dirPath = (0, path_1.dirname)(path)
         .replace(/\W/g, '/')
