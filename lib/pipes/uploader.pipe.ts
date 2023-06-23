@@ -1,6 +1,4 @@
 import { FileTypeValidatorOptions, FileValidator } from '@nestjs/common';
-import { fromBuffer } from 'file-type';
-import { readChunk } from '../utils/uploader.util';
 
 export class UploaderFileTypeValidator extends FileValidator<FileTypeValidatorOptions> {
   buildErrorMessage(): string {
@@ -15,9 +13,6 @@ export class UploaderFileTypeValidator extends FileValidator<FileTypeValidatorOp
     }
 
     console.log('Pipe File:', file);
-    const buffer = await readChunk(file.path, { length: 4100 });
-
-    console.log(await fromBuffer(buffer));
 
     return !!file && 'mimetype' in file;
   }

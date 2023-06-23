@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CallHandler,
   ExecutionContext,
   Injectable,
@@ -36,15 +37,25 @@ interface FilesInterceptorOptions {
   maxCount?: number;
   path?: string;
   limits?: MulterOptions['limits'];
-  fileFilter?: MulterOptions['fileFilter'];
+  acceptMimetype?: Array<string>;
   destination?: DiskStorageOptions['destination'];
   filename?: DiskStorageOptions['filename'];
   renameIfMimeWrong?: boolean;
 }
 
-export function UploaderInterceptor(
-  options: FilesInterceptorOptions,
-): Type<NestInterceptor> {
+export function UploaderInterceptor({
+  fieldName,
+  uploadFields,
+  maxCount,
+  path,
+  limits,
+  acceptMimetype = Object.values(MIME_TYPE)
+    .map((e) => e)
+    .flat(),
+  destination,
+  filename,
+  renameIfMimeWrong = true,
+}: FilesInterceptorOptions): Type<NestInterceptor> {
   @Injectable()
   class Interceptor implements NestInterceptor {
     fileInterceptor: NestInterceptor;
@@ -55,34 +66,27 @@ export function UploaderInterceptor(
       const multerOptions: MulterOptions = {
         storage: diskStorage({
           destination:
-            options.destination ||
-            makeDes(convertPath(`${filesDest}/${options.path || ''}`)),
-          filename: options.filename || editFileName,
+            destination || makeDes(convertPath(`${filesDest}/${path || ''}`)),
+          filename: filename || editFileName,
         }),
-        fileFilter:
-          options.fileFilter ||
-          fileFilter(
-            Object.values(MIME_TYPE)
-              .map((e) => e)
-              .flat(),
-          ),
-        limits: options.limits,
+        fileFilter: fileFilter(acceptMimetype),
+        limits: limits,
       };
 
-      if (options.uploadFields) {
+      if (uploadFields) {
         this.fileInterceptor = new (FileFieldsInterceptor(
-          options.uploadFields,
+          uploadFields,
           multerOptions,
         ))();
-      } else if (options.maxCount) {
+      } else if (maxCount) {
         this.fileInterceptor = new (FilesInterceptor(
-          options.fieldName,
-          options.maxCount,
+          fieldName,
+          maxCount,
           multerOptions,
         ))();
       } else {
         this.fileInterceptor = new (FileInterceptor(
-          options.fieldName,
+          fieldName,
           multerOptions,
         ))();
       }
@@ -94,12 +98,16 @@ export function UploaderInterceptor(
 
       const intercept = await this.fileInterceptor.intercept(context, next);
 
-      if (options.renameIfMimeWrong) {
-        const { file } = req;
+      const { file } = req;
 
-        const buffer = await readChunk(file.path, { length: 4100 });
-        const { ext, mime } = await fromBuffer(buffer);
+      const buffer = await readChunk(file.path, { length: 4100 });
+      const { ext, mime } = await fromBuffer(buffer);
 
+      if (!acceptMimetype.includes(mime)) {
+        throw new BadRequestException('Invalid mime type');
+      }
+
+      if (renameIfMimeWrong) {
         const name = basename(file.filename, extname(file.filename));
         const filename = `${name}.${ext}`;
         const path = `${file.destination}/${filename}`;

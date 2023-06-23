@@ -7,10 +7,10 @@ interface FilesInterceptorOptions {
     maxCount?: number;
     path?: string;
     limits?: MulterOptions['limits'];
-    fileFilter?: MulterOptions['fileFilter'];
+    acceptMimetype?: Array<string>;
     destination?: DiskStorageOptions['destination'];
     filename?: DiskStorageOptions['filename'];
     renameIfMimeWrong?: boolean;
 }
-export declare function UploaderInterceptor(options: FilesInterceptorOptions): Type<NestInterceptor>;
+export declare function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, acceptMimetype, destination, filename, renameIfMimeWrong, }: FilesInterceptorOptions): Type<NestInterceptor>;
 export {};

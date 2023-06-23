@@ -19,41 +19,42 @@ const path_1 = require("path");
 const uploader_constant_1 = require("../constants/uploader.constant");
 const uploader_service_1 = require("../uploader.service");
 const uploader_util_1 = require("../utils/uploader.util");
-function UploaderInterceptor(options) {
+function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, acceptMimetype = Object.values(uploader_constant_1.MIME_TYPE)
+    .map((e) => e)
+    .flat(), destination, filename, renameIfMimeWrong = true, }) {
     let Interceptor = class Interceptor {
         constructor(uploaderService) {
             this.uploaderService = uploaderService;
             const filesDest = this.uploaderService.uploaderOptions.dest;
             const multerOptions = {
                 storage: (0, multer_1.diskStorage)({
-                    destination: options.destination ||
-                        (0, uploader_util_1.makeDes)((0, uploader_util_1.convertPath)(`${filesDest}/${options.path || ''}`)),
-                    filename: options.filename || uploader_util_1.editFileName,
+                    destination: destination || (0, uploader_util_1.makeDes)((0, uploader_util_1.convertPath)(`${filesDest}/${path || ''}`)),
+                    filename: filename || uploader_util_1.editFileName,
                 }),
-                fileFilter: options.fileFilter ||
-                    (0, uploader_util_1.fileFilter)(Object.values(uploader_constant_1.MIME_TYPE)
-                        .map((e) => e)
-                        .flat()),
-                limits: options.limits,
+                fileFilter: (0, uploader_util_1.fileFilter)(acceptMimetype),
+                limits: limits,
             };
-            if (options.uploadFields) {
-                this.fileInterceptor = new ((0, platform_express_1.FileFieldsInterceptor)(options.uploadFields, multerOptions))();
+            if (uploadFields) {
+                this.fileInterceptor = new ((0, platform_express_1.FileFieldsInterceptor)(uploadFields, multerOptions))();
             }
-            else if (options.maxCount) {
-                this.fileInterceptor = new ((0, platform_express_1.FilesInterceptor)(options.fieldName, options.maxCount, multerOptions))();
+            else if (maxCount) {
+                this.fileInterceptor = new ((0, platform_express_1.FilesInterceptor)(fieldName, maxCount, multerOptions))();
             }
             else {
-                this.fileInterceptor = new ((0, platform_express_1.FileInterceptor)(options.fieldName, multerOptions))();
+                this.fileInterceptor = new ((0, platform_express_1.FileInterceptor)(fieldName, multerOptions))();
             }
         }
         async intercept(context, next) {
             const ctx = context.switchToHttp();
             const req = ctx.getRequest();
             const intercept = await this.fileInterceptor.intercept(context, next);
-            if (options.renameIfMimeWrong) {
-                const { file } = req;
-                const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
-                const { ext, mime } = await (0, file_type_1.fromBuffer)(buffer);
+            const { file } = req;
+            const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
+            const { ext, mime } = await (0, file_type_1.fromBuffer)(buffer);
+            if (!acceptMimetype.includes(mime)) {
+                throw new common_1.BadRequestException('Invalid mime type');
+            }
+            if (renameIfMimeWrong) {
                 const name = (0, path_1.basename)(file.filename, (0, path_1.extname)(file.filename));
                 const filename = `${name}.${ext}`;
                 const path = `${file.destination}/${filename}`;

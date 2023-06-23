@@ -46,7 +46,7 @@ export const convertPath = (path: string): string => {
 
 export const fileFilter =
   (acceptMimetype: Array<string>) =>
-  async (
+  (
     req: Request,
     file: Express.Multer.File,
     callback: (error: Error, acceptFile: boolean) => void,
