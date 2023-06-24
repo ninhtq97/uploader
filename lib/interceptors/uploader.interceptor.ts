@@ -21,7 +21,6 @@ import { fromBuffer } from 'file-type';
 import { rename, unlink } from 'fs/promises';
 import { DiskStorageOptions, diskStorage } from 'multer';
 import { basename, extname } from 'path';
-import { tap } from 'rxjs';
 import { MIME_TYPE } from '../constants/uploader.constant';
 import { UploaderService } from '../uploader.service';
 import {
@@ -99,7 +98,12 @@ export function UploaderInterceptor({
 
       console.log('=====================Run Intercept');
 
-      const intercept = await this.fileInterceptor.intercept(context, next);
+      try {
+        await this.fileInterceptor.intercept(context, next);
+      } catch (error) {
+        console.log('===============Catch Interceptor Error:', error);
+        next.handle();
+      }
 
       const { file } = req;
 
@@ -125,9 +129,7 @@ export function UploaderInterceptor({
       }
 
       console.log('=====================Intercept Done');
-      return intercept.pipe(
-        tap(() => console.log('=====================End Interceptor')),
-      );
+      return next.handle();
     }
   }
   return mixin(Interceptor);
