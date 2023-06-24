@@ -21,7 +21,7 @@ import { fromBuffer } from 'file-type';
 import { rename, unlink } from 'fs/promises';
 import { DiskStorageOptions, diskStorage } from 'multer';
 import { basename, extname } from 'path';
-import { catchError, tap } from 'rxjs';
+import { tap } from 'rxjs';
 import { MIME_TYPE } from '../constants/uploader.constant';
 import { UploaderService } from '../uploader.service';
 import {
@@ -134,9 +134,9 @@ export function UploaderInterceptor({
           .handle()
           .pipe(tap(() => console.log('=====================End Interceptor')));
       } catch (error) {
-        console.log("('=====================Catch Error Interceptor");
+        console.log('=====================Catch Error Interceptor');
 
-        return next.handle().pipe(catchError((error) => error));
+        return next.handle().pipe(tap(() => error));
       }
     }
   }
