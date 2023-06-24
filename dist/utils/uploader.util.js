@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeDes = exports.editFileName = exports.fileFilter = exports.convertPath = exports.readChunk = void 0;
-const common_1 = require("@nestjs/common");
 const fs_1 = require("fs");
 const nanoid_1 = require("nanoid");
 const path_1 = require("path");
@@ -40,7 +39,7 @@ const fileFilter = (acceptMimetype) => (req, file, callback) => {
     console.log('====================Run File Filter...');
     if (!acceptMimetype || !acceptMimetype.includes(file.mimetype)) {
         console.log('====================File Filter Callback False');
-        return callback(new common_1.BadRequestException('Invalid mime type'), false);
+        return callback(new Error('Invalid mime type'), false);
     }
     console.log('====================File Filter Callback True');
     callback(null, true);
