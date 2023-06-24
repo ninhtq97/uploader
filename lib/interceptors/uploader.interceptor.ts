@@ -16,7 +16,7 @@ import {
   MulterField,
   MulterOptions,
 } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { fromBuffer } from 'file-type';
 import { rename, unlink } from 'fs/promises';
 import { DiskStorageOptions, diskStorage } from 'multer';
@@ -95,16 +95,10 @@ export function UploaderInterceptor({
     async intercept(context: ExecutionContext, next: CallHandler) {
       const ctx = context.switchToHttp();
       const req = ctx.getRequest<Request>();
-      const res = ctx.getResponse<Response>();
 
       console.log('=====================Run Intercept');
 
-      try {
-        await this.fileInterceptor.intercept(context, next);
-      } catch (error) {
-        console.log('===============Catch Interceptor Error:', error);
-        res.status(error.status).json(error.response);
-      }
+      const intercept = await this.fileInterceptor.intercept(context, next);
 
       const { file } = req;
 

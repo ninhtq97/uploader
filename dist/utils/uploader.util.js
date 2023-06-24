@@ -40,7 +40,7 @@ const fileFilter = (acceptMimetype) => (req, file, callback) => {
     console.log('====================Run File Filter...');
     if (!acceptMimetype || !acceptMimetype.includes(file.mimetype)) {
         console.log('====================File Filter Callback False');
-        callback(new common_1.BadRequestException('Invalid mime type'), false);
+        return callback(new common_1.BadRequestException('Invalid mime type'), false);
     }
     console.log('====================File Filter Callback True');
     callback(null, true);
