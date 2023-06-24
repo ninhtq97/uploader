@@ -53,7 +53,6 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
             }
             catch (error) {
                 console.log('===============Catch Interceptor Error:', error);
-                next.handle();
             }
             const { file } = req;
             const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
