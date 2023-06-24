@@ -49,8 +49,7 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
             const ctx = context.switchToHttp();
             const req = ctx.getRequest();
             console.log('=====================Run Intercept');
-            const intercept = await this.fileInterceptor.intercept(context, next);
-            intercept.pipe((0, rxjs_1.catchError)((error) => (0, rxjs_1.of)(error)));
+            await this.fileInterceptor.intercept(context, next);
             const { file } = req;
             const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
             const { ext, mime } = await (0, file_type_1.fromBuffer)(buffer);
@@ -69,7 +68,9 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
                 req.file = Object.assign(Object.assign({}, file), { mimetype: mime, filename, path: path });
             }
             console.log('=====================Intercept Done');
-            return intercept;
+            return next
+                .handle()
+                .pipe((0, rxjs_1.tap)(() => console.log('=====================End Interceptor')));
         }
     };
     Interceptor = __decorate([
