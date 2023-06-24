@@ -94,41 +94,50 @@ export function UploaderInterceptor({
     }
 
     async intercept(context: ExecutionContext, next: CallHandler) {
-      const ctx = context.switchToHttp();
-      const req = ctx.getRequest<Request>();
+      try {
+        const ctx = context.switchToHttp();
+        const req = ctx.getRequest<Request>();
 
-      console.log('=====================Run Intercept');
+        console.log('=====================Run Intercept');
 
-      await this.fileInterceptor.intercept(context, next);
+        await this.fileInterceptor.intercept(context, next);
 
-      const { file } = req;
+        const { file } = req;
 
-      const buffer = await readChunk(file.path, { length: 4100 });
-      const { ext, mime } = await fromBuffer(buffer);
+        const buffer = await readChunk(file.path, { length: 4100 });
+        const { ext, mime } = await fromBuffer(buffer);
 
-      console.log('=====================Pass Intercept');
+        console.log('=====================Pass Intercept');
 
-      if (!acceptMimetype.includes(mime)) {
-        console.log('=====================Intercept Throw Error Original Mime');
-        await unlink(file.path);
-        throw new BadRequestException('Invalid original mime type');
+        if (!acceptMimetype.includes(mime)) {
+          console.log(
+            '=====================Intercept Throw Error Original Mime',
+          );
+          await unlink(file.path);
+          throw new BadRequestException('Invalid original mime type');
+        }
+
+        if (renameIfMimeWrong) {
+          console.log(
+            '=====================Intercept Rename File If Mime Wrong',
+          );
+          const name = basename(file.filename, extname(file.filename));
+          const filename = `${name}.${ext}`;
+          const path = `${file.destination}/${filename}`;
+
+          await rename(file.path, path);
+          req.file = { ...file, mimetype: mime, filename, path: path };
+        }
+
+        console.log('=====================Intercept Done');
+        return next
+          .handle()
+          .pipe(tap(() => console.log('=====================End Interceptor')));
+      } catch (error) {
+        console.log("('=====================Catch Error Interceptor");
+
+        return next.handle().pipe(catchError((error) => error));
       }
-
-      if (renameIfMimeWrong) {
-        console.log('=====================Intercept Rename File If Mime Wrong');
-        const name = basename(file.filename, extname(file.filename));
-        const filename = `${name}.${ext}`;
-        const path = `${file.destination}/${filename}`;
-
-        await rename(file.path, path);
-        req.file = { ...file, mimetype: mime, filename, path: path };
-      }
-
-      console.log('=====================Intercept Done');
-      return next
-        .handle()
-        .pipe(tap(() => console.log('=====================End Interceptor')))
-        .pipe(catchError((error) => error));
     }
   }
   return mixin(Interceptor);
