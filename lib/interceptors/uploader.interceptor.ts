@@ -99,9 +99,13 @@ export function UploaderInterceptor({
 
       console.log('=====================Run Intercept');
 
-      await new Promise((resolve, reject) =>
-        this.fileInterceptor.intercept(context, next),
-      );
+      await new Promise((resolve, reject) => {
+        try {
+          resolve(this.fileInterceptor.intercept(context, next));
+        } catch (error) {
+          reject(error);
+        }
+      });
 
       // await this.fileInterceptor.intercept(context, next);
 
