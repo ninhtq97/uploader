@@ -136,7 +136,7 @@ export function UploaderInterceptor({
       } catch (error) {
         console.log('=====================Catch Error Interceptor');
 
-        return next.handle().pipe(tap(() => error));
+        return next.handle().pipe(tap({ error: () => error }));
       }
     }
   }

@@ -75,7 +75,7 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
             }
             catch (error) {
                 console.log('=====================Catch Error Interceptor');
-                return next.handle().pipe((0, rxjs_1.tap)(() => error));
+                return next.handle().pipe((0, rxjs_1.tap)({ error: () => error }));
             }
         }
     };
