@@ -96,6 +96,8 @@ export function UploaderInterceptor({
       const ctx = context.switchToHttp();
       const req = ctx.getRequest<Request>();
 
+      console.log('=====================Run Intercept');
+
       const intercept = await this.fileInterceptor.intercept(context, next);
 
       const { file } = req;
@@ -103,12 +105,16 @@ export function UploaderInterceptor({
       const buffer = await readChunk(file.path, { length: 4100 });
       const { ext, mime } = await fromBuffer(buffer);
 
+      console.log('=====================Pass Intercept');
+
       if (!acceptMimetype.includes(mime)) {
+        console.log('=====================Intercept Throw Error Original Mime');
         await unlink(file.path);
         throw new BadRequestException('Invalid original mime type');
       }
 
       if (renameIfMimeWrong) {
+        console.log('=====================Intercept Rename File If Mime Wrong');
         const name = basename(file.filename, extname(file.filename));
         const filename = `${name}.${ext}`;
         const path = `${file.destination}/${filename}`;
@@ -117,6 +123,7 @@ export function UploaderInterceptor({
         req.file = { ...file, mimetype: mime, filename, path: path };
       }
 
+      console.log('=====================Intercept Done');
       return intercept;
     }
   }

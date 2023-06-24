@@ -51,10 +51,14 @@ export const fileFilter =
     file: Express.Multer.File,
     callback: (error: Error, acceptFile: boolean) => void,
   ) => {
+    console.log('====================Run File Filter...');
+
     if (!acceptMimetype || !acceptMimetype.includes(file.mimetype)) {
+      console.log('====================File Filter Callback False');
       return callback(new BadRequestException('Invalid mime type'), false);
     }
 
+    console.log('====================File Filter Callback True');
     callback(null, true);
   };
 
