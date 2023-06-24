@@ -21,6 +21,7 @@ import { fromBuffer } from 'file-type';
 import { rename, unlink } from 'fs/promises';
 import { DiskStorageOptions, diskStorage } from 'multer';
 import { basename, extname } from 'path';
+import { catchError, of } from 'rxjs';
 import { MIME_TYPE } from '../constants/uploader.constant';
 import { UploaderService } from '../uploader.service';
 import {
@@ -99,6 +100,7 @@ export function UploaderInterceptor({
       console.log('=====================Run Intercept');
 
       const intercept = await this.fileInterceptor.intercept(context, next);
+      intercept.pipe(catchError((error) => of(error)));
 
       const { file } = req;
 

@@ -16,6 +16,7 @@ const file_type_1 = require("file-type");
 const promises_1 = require("fs/promises");
 const multer_1 = require("multer");
 const path_1 = require("path");
+const rxjs_1 = require("rxjs");
 const uploader_constant_1 = require("../constants/uploader.constant");
 const uploader_service_1 = require("../uploader.service");
 const uploader_util_1 = require("../utils/uploader.util");
@@ -49,6 +50,7 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
             const req = ctx.getRequest();
             console.log('=====================Run Intercept');
             const intercept = await this.fileInterceptor.intercept(context, next);
+            intercept.pipe((0, rxjs_1.catchError)((error) => (0, rxjs_1.of)(error)));
             const { file } = req;
             const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
             const { ext, mime } = await (0, file_type_1.fromBuffer)(buffer);
