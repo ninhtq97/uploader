@@ -102,7 +102,7 @@ export function UploaderInterceptor({
         await this.fileInterceptor.intercept(context, next);
       } catch (error) {
         console.log('===============Catch Interceptor Error:', error);
-        throw error;
+        throw new BadRequestException(error.message);
       }
 
       const { file } = req;
