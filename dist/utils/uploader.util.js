@@ -4,6 +4,7 @@ exports.makeDes = exports.editFileName = exports.fileFilter = exports.convertPat
 const fs_1 = require("fs");
 const nanoid_1 = require("nanoid");
 const path_1 = require("path");
+const common_1 = require("@nestjs/common");
 const promises_1 = require("fs/promises");
 async function readChunk(filePath, { length, startPosition = undefined }) {
     const fileDescriptor = await (0, promises_1.open)(filePath, 'r');
@@ -39,7 +40,7 @@ const fileFilter = (acceptMimetype) => (req, file, callback) => {
     console.log('====================Run File Filter...');
     if (!acceptMimetype || !acceptMimetype.includes(file.mimetype)) {
         console.log('====================File Filter Callback False');
-        return callback(new Error('Invalid mime type'), false);
+        return callback(new common_1.BadRequestException('Invalid mime type'), false);
     }
     console.log('====================File Filter Callback True');
     callback(null, true);

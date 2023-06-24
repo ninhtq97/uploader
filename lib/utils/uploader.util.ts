@@ -3,6 +3,7 @@ import { promises as fsPromises } from 'fs';
 import { customAlphabet, urlAlphabet } from 'nanoid';
 import { basename, dirname, extname, join, resolve } from 'path';
 
+import { BadRequestException } from '@nestjs/common';
 import { open } from 'fs/promises';
 
 export async function readChunk(
@@ -54,7 +55,7 @@ export const fileFilter =
 
     if (!acceptMimetype || !acceptMimetype.includes(file.mimetype)) {
       console.log('====================File Filter Callback False');
-      return callback(new Error('Invalid mime type'), false);
+      return callback(new BadRequestException('Invalid mime type'), false);
     }
 
     console.log('====================File Filter Callback True');
