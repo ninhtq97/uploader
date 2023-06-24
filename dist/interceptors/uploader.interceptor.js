@@ -47,13 +47,14 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
         async intercept(context, next) {
             const ctx = context.switchToHttp();
             const req = ctx.getRequest();
+            const res = ctx.getResponse();
             console.log('=====================Run Intercept');
             try {
                 await this.fileInterceptor.intercept(context, next);
             }
             catch (error) {
                 console.log('===============Catch Interceptor Error:', error);
-                throw new common_1.BadRequestException(error.message);
+                res.status(error.status).json(error.response);
             }
             const { file } = req;
             const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
