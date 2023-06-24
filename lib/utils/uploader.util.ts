@@ -56,6 +56,7 @@ export const fileFilter =
     if (!acceptMimetype || !acceptMimetype.includes(file.mimetype)) {
       console.log('====================File Filter Callback False');
       callback(new BadRequestException('Invalid mime type'), false);
+      return;
     }
 
     console.log('====================File Filter Callback True');
