@@ -98,7 +98,13 @@ export function UploaderInterceptor({
 
       console.log('=====================Run Intercept');
 
-      const intercept = await this.fileInterceptor.intercept(context, next);
+      try {
+        const intercept = await this.fileInterceptor.intercept(context, next);
+      } catch (error) {
+        console.log('=====================Catch Intercept Req:', req);
+        console.log('=====================Catch Intercept Error:', error);
+        throw error;
+      }
 
       const { file } = req;
 
