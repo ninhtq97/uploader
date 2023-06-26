@@ -1,7 +1,6 @@
-/// <reference types="multer" />
 import { FileValidator } from '@nestjs/common';
 import { UploaderFileTypeValidatorOptions } from '../interfaces/uploader-validator-options';
-interface IFile extends Express.Multer.File {
+interface IFile {
     mimetype: string;
     size: number;
 }
