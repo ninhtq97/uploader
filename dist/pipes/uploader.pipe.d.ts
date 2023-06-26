@@ -4,5 +4,5 @@ import { UploaderFileTypeValidatorOptions } from '../interfaces/uploader-validat
 export declare class UploaderFileTypeValidator extends FileValidator<UploaderFileTypeValidatorOptions> {
     constructor({ acceptMimeType, renameIfMimeWrong, }: UploaderFileTypeValidatorOptions);
     buildErrorMessage(): string;
-    isValid<TFile extends Express.Multer.File = any>(file?: TFile): Promise<boolean>;
+    isValid(file?: Express.Multer.File): Promise<boolean>;
 }
