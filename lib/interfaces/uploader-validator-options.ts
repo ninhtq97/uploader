@@ -1,4 +1,7 @@
 export type UploaderFileTypeValidatorOptions = {
-  acceptMimeType?: string[];
   renameIfMimeWrong?: boolean;
 };
+
+export type UploaderFile = {
+  acceptMimeType: string[];
+} & Express.Multer.File;

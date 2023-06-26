@@ -5,7 +5,8 @@ interface IFile {
     size: number;
 }
 export declare class UploaderFileTypeValidator extends FileValidator<UploaderFileTypeValidatorOptions> {
-    constructor({ acceptMimeType, renameIfMimeWrong, }: UploaderFileTypeValidatorOptions);
+    acceptMimeType: string[];
+    constructor({ renameIfMimeWrong }: UploaderFileTypeValidatorOptions);
     buildErrorMessage(): string;
     isValid<TFile extends IFile = any>(file?: TFile): Promise<boolean>;
 }
