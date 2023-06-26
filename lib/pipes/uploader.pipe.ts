@@ -6,6 +6,11 @@ import { MIME_TYPE } from '../constants/uploader.constant';
 import { UploaderFileTypeValidatorOptions } from '../interfaces/uploader-validator-options';
 import { readChunk } from '../utils/uploader.util';
 
+interface IFile extends Express.Multer.File {
+  mimetype: string;
+  size: number;
+}
+
 export class UploaderFileTypeValidator extends FileValidator<UploaderFileTypeValidatorOptions> {
   constructor({
     acceptMimeType = Object.values(MIME_TYPE)
@@ -22,7 +27,7 @@ export class UploaderFileTypeValidator extends FileValidator<UploaderFileTypeVal
     )})`;
   }
 
-  async isValid(file?: Express.Multer.File) {
+  async isValid<TFile extends IFile = any>(file?: TFile) {
     if (!this.validationOptions) {
       return true;
     }
