@@ -41,8 +41,13 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
                 this.fileInterceptor = new ((0, platform_express_1.FileInterceptor)(fieldName, multerOptions))();
             }
         }
-        intercept(...args) {
-            return this.fileInterceptor.intercept(...args);
+        async intercept(context, next) {
+            const ctx = context.switchToHttp();
+            const req = ctx.getRequest();
+            const intercept = await this.fileInterceptor.intercept(context, next);
+            const { file } = req;
+            req.file = Object.assign(Object.assign({}, file), { acceptMimetype });
+            return intercept;
         }
     };
     Interceptor = __decorate([
