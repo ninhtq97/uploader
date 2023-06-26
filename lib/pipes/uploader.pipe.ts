@@ -22,9 +22,7 @@ export class UploaderFileTypeValidator extends FileValidator<UploaderFileTypeVal
     )})`;
   }
 
-  async isValid<TFile extends Express.Multer.File = any>(
-    file?: TFile,
-  ): Promise<boolean> {
+  async isValid<TFile extends Express.Multer.File = any>(file?: TFile) {
     if (!this.validationOptions) {
       return true;
     }
