@@ -1,3 +1,4 @@
 export type UploaderFileTypeValidatorOptions = {
-  acceptMimeType: string[];
+  acceptMimeType?: string[];
+  renameIfMimeWrong?: boolean;
 };
