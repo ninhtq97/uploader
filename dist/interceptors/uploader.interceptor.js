@@ -51,15 +51,16 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
             const { file } = req;
             const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
             const { ext, mime } = await (0, file_type_1.fromBuffer)(buffer);
+            const name = (0, path_1.basename)(file.filename, (0, path_1.extname)(file.filename));
+            const filename = `${name}.${ext}`;
+            const path = `${file.destination}/${filename}`;
             if (renameIfMimeWrong) {
-                const name = (0, path_1.basename)(file.filename, (0, path_1.extname)(file.filename));
-                const filename = `${name}.${ext}`;
-                const path = `${file.destination}/${filename}`;
+                console.log('renameIfMimeWrong:', renameIfMimeWrong);
                 await (0, promises_1.rename)(file.path, path);
                 req.file = Object.assign(Object.assign({}, file), { mimetype: mime, filename, path: path });
             }
             if (!acceptMimetype.includes(mime)) {
-                await (0, promises_1.unlink)(file.path);
+                await (0, promises_1.unlink)(path);
                 throw new common_1.BadRequestException('Invalid original mime type');
             }
             return intercept;
