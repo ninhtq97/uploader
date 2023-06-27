@@ -30,7 +30,7 @@ export class UploaderFileTypeValidator extends FileValidator<UploaderFileTypeVal
     if (!this.validationOptions) return true;
 
     const parseFile: UploaderFile = file as any;
-    this.acceptMimeType = parseFile.acceptMimeType;
+    this.acceptMimeType = parseFile.acceptMimeType || [];
 
     const buffer = await readChunk(parseFile.path, { length: 4100 });
     const { ext, mime } = await fromBuffer(buffer);

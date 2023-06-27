@@ -45,7 +45,9 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
         async intercept(context, next) {
             const ctx = context.switchToHttp();
             const req = ctx.getRequest();
+            console.log('============== Start Run Intercept');
             const intercept = await this.fileInterceptor.intercept(context, next);
+            console.log('============== Pass Run Intercept');
             const { file } = req;
             intercept.pipe((0, rxjs_1.tap)(() => {
                 req.file = Object.assign(Object.assign({}, file), { acceptMimetype });

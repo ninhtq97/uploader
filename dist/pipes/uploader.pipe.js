@@ -16,7 +16,7 @@ class UploaderFileTypeValidator extends common_1.FileValidator {
         if (!this.validationOptions)
             return true;
         const parseFile = file;
-        this.acceptMimeType = parseFile.acceptMimeType;
+        this.acceptMimeType = parseFile.acceptMimeType || [];
         const buffer = await (0, uploader_util_1.readChunk)(parseFile.path, { length: 4100 });
         const { ext, mime } = await (0, file_type_1.fromBuffer)(buffer);
         return (!!file && 'mimetype' in file && parseFile.acceptMimeType.includes(mime));

@@ -90,7 +90,11 @@ export function UploaderInterceptor({
       const ctx = context.switchToHttp();
       const req = ctx.getRequest<Request>();
 
+      console.log('============== Start Run Intercept');
+
       const intercept = await this.fileInterceptor.intercept(context, next);
+
+      console.log('============== Pass Run Intercept');
 
       const { file } = req;
       intercept.pipe(
