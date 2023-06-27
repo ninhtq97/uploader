@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   CallHandler,
   ExecutionContext,
   Injectable,
@@ -18,7 +17,7 @@ import {
 } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { Request } from 'express';
 import { fromBuffer } from 'file-type';
-import { rename, unlink } from 'fs/promises';
+import { rename } from 'fs/promises';
 import { DiskStorageOptions, diskStorage } from 'multer';
 import { basename, extname } from 'path';
 import { MIME_TYPE } from '../constants/uploader.constant';
@@ -96,30 +95,28 @@ export function UploaderInterceptor({
       const ctx = context.switchToHttp();
       const req = ctx.getRequest<Request>();
 
-      const intercept = await this.fileInterceptor.intercept(context, next);
+      this.fileInterceptor.intercept(context, next);
 
       const { file } = req;
 
       const buffer = await readChunk(file.path, { length: 4100 });
       const { ext, mime } = await fromBuffer(buffer);
 
-      const name = basename(file.filename, extname(file.filename));
-      const filename = `${name}.${ext}`;
-      const path = `${file.destination}/${filename}`;
-
       if (renameIfMimeWrong) {
-        console.log('renameIfMimeWrong:', renameIfMimeWrong);
+        const name = basename(file.filename, extname(file.filename));
+        const filename = `${name}.${ext}`;
+        const path = `${file.destination}/${filename}`;
 
         await rename(file.path, path);
         req.file = { ...file, mimetype: mime, filename, path: path };
       }
 
-      if (!acceptMimetype.includes(mime)) {
-        await unlink(path);
-        throw new BadRequestException('Invalid original mime type');
-      }
+      // if (!acceptMimetype.includes(mime)) {
+      //   await unlink(path);
+      //   throw new BadRequestException('Invalid original mime type');
+      // }
 
-      return intercept;
+      return next.handle();
     }
   }
   return mixin(Interceptor);
