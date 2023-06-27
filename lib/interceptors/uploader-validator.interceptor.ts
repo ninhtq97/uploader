@@ -10,6 +10,7 @@ import {
 import { Request } from 'express';
 import { fromBuffer } from 'file-type';
 import { unlink } from 'fs/promises';
+import { UPLOADER_HEADERS } from '../constants/uploader.constant';
 import { readChunk } from '../utils/uploader.util';
 
 export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
@@ -19,7 +20,7 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
       const ctx = context.switchToHttp();
       const req = ctx.getRequest<Request>();
 
-      const acceptMimetype = req.headers['x-accept-mime'];
+      const acceptMimetype = req.headers[UPLOADER_HEADERS.ACCEPT_MIME];
       const { file } = req;
 
       const buffer = await readChunk(file.path, { length: 4100 });

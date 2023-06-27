@@ -12,3 +12,7 @@ export const MIME_TYPE = {
     'application/vnd.ms-excel',
   ],
 };
+
+export const UPLOADER_HEADERS = {
+  ACCEPT_MIME: 'x-accept-mime',
+};

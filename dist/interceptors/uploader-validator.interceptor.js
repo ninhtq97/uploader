@@ -10,13 +10,14 @@ exports.UploaderValidatorInterceptor = void 0;
 const common_1 = require("@nestjs/common");
 const file_type_1 = require("file-type");
 const promises_1 = require("fs/promises");
+const uploader_constant_1 = require("../constants/uploader.constant");
 const uploader_util_1 = require("../utils/uploader.util");
 function UploaderValidatorInterceptor() {
     let Interceptor = class Interceptor {
         async intercept(context, next) {
             const ctx = context.switchToHttp();
             const req = ctx.getRequest();
-            const acceptMimetype = req.headers['x-accept-mime'];
+            const acceptMimetype = req.headers[uploader_constant_1.UPLOADER_HEADERS.ACCEPT_MIME];
             const { file } = req;
             const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
             const { mime } = await (0, file_type_1.fromBuffer)(buffer);

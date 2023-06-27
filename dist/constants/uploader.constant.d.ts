@@ -4,3 +4,6 @@ export declare const MIME_TYPE: {
     DOCS: string[];
     EXCEL: string[];
 };
+export declare const UPLOADER_HEADERS: {
+    ACCEPT_MIME: string;
+};
