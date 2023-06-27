@@ -95,7 +95,7 @@ export function UploaderInterceptor({
       const ctx = context.switchToHttp();
       const req = ctx.getRequest<Request>();
 
-      await this.fileInterceptor.intercept(context, next);
+      const intercept = await this.fileInterceptor.intercept(context, next);
 
       const { file } = req;
 
@@ -116,7 +116,7 @@ export function UploaderInterceptor({
       //   throw new BadRequestException('Invalid original mime type');
       // }
 
-      return next.handle();
+      return intercept;
     }
   }
   return mixin(Interceptor);

@@ -47,7 +47,7 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
         async intercept(context, next) {
             const ctx = context.switchToHttp();
             const req = ctx.getRequest();
-            await this.fileInterceptor.intercept(context, next);
+            const intercept = await this.fileInterceptor.intercept(context, next);
             const { file } = req;
             const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
             const { ext, mime } = await (0, file_type_1.fromBuffer)(buffer);
@@ -58,7 +58,7 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
                 await (0, promises_1.rename)(file.path, path);
                 req.file = Object.assign(Object.assign({}, file), { mimetype: mime, filename, path: path });
             }
-            return next.handle();
+            return intercept;
         }
     };
     Interceptor = __decorate([
