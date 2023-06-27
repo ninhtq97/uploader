@@ -19,7 +19,7 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
       const ctx = context.switchToHttp();
       const req = ctx.getRequest<Request>();
 
-      console.log('Uploader Validator Req:', req);
+      console.log('Uploader Validator Req:', req.headers);
 
       const acceptMimetype = req.headers['x-accept-mime'];
       const { file } = req;
