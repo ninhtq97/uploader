@@ -12,14 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UploaderInterceptor = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
+const file_type_1 = require("file-type");
+const promises_1 = require("fs/promises");
 const multer_1 = require("multer");
-const rxjs_1 = require("rxjs");
+const path_1 = require("path");
 const uploader_constant_1 = require("../constants/uploader.constant");
 const uploader_service_1 = require("../uploader.service");
 const uploader_util_1 = require("../utils/uploader.util");
 function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, acceptMimetype = Object.values(uploader_constant_1.MIME_TYPE)
     .map((e) => e)
-    .flat(), destination, filename, }) {
+    .flat(), destination, filename, renameIfMimeWrong = true, }) {
     let Interceptor = class Interceptor {
         constructor(uploaderService) {
             this.uploaderService = uploaderService;
@@ -45,14 +47,21 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
         async intercept(context, next) {
             const ctx = context.switchToHttp();
             const req = ctx.getRequest();
-            console.log('============== Start Run Intercept');
             const intercept = await this.fileInterceptor.intercept(context, next);
-            console.log('============== Pass Run Intercept');
             const { file } = req;
-            intercept.pipe((0, rxjs_1.tap)(() => {
-                req.file = Object.assign(Object.assign({}, file), { acceptMimetype });
-                console.log('File:', req.file);
-            }));
+            const buffer = await (0, uploader_util_1.readChunk)(file.path, { length: 4100 });
+            const { ext, mime } = await (0, file_type_1.fromBuffer)(buffer);
+            if (!acceptMimetype.includes(mime)) {
+                await (0, promises_1.unlink)(file.path);
+                throw new common_1.BadRequestException('Invalid original mime type');
+            }
+            if (renameIfMimeWrong) {
+                const name = (0, path_1.basename)(file.filename, (0, path_1.extname)(file.filename));
+                const filename = `${name}.${ext}`;
+                const path = `${file.destination}/${filename}`;
+                await (0, promises_1.rename)(file.path, path);
+                req.file = Object.assign(Object.assign({}, file), { mimetype: mime, filename, path: path });
+            }
             return intercept;
         }
     };

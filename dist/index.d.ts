@@ -3,6 +3,5 @@ export { MIME_TYPE, UPLOADER_OPTIONS } from './constants/uploader.constant';
 export { UploaderOptions } from './interfaces/uploader-options';
 export { UploaderOptionsFactory } from './interfaces/uploader-options-factory';
 export { UploaderInterceptor } from './interceptors/uploader.interceptor';
-export { UploaderFileTypeValidator } from './pipes/uploader.pipe';
 export { editFileName, fileFilter, makeDes } from './utils/uploader.util';
 export { UploaderService } from './uploader.service';

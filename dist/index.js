@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UploaderService = exports.makeDes = exports.fileFilter = exports.editFileName = exports.UploaderFileTypeValidator = exports.UploaderInterceptor = exports.UPLOADER_OPTIONS = exports.MIME_TYPE = exports.UploaderModule = void 0;
+exports.UploaderService = exports.makeDes = exports.fileFilter = exports.editFileName = exports.UploaderInterceptor = exports.UPLOADER_OPTIONS = exports.MIME_TYPE = exports.UploaderModule = void 0;
 var uploader_module_1 = require("./uploader.module");
 Object.defineProperty(exports, "UploaderModule", { enumerable: true, get: function () { return uploader_module_1.UploaderModule; } });
 var uploader_constant_1 = require("./constants/uploader.constant");
@@ -8,8 +8,6 @@ Object.defineProperty(exports, "MIME_TYPE", { enumerable: true, get: function ()
 Object.defineProperty(exports, "UPLOADER_OPTIONS", { enumerable: true, get: function () { return uploader_constant_1.UPLOADER_OPTIONS; } });
 var uploader_interceptor_1 = require("./interceptors/uploader.interceptor");
 Object.defineProperty(exports, "UploaderInterceptor", { enumerable: true, get: function () { return uploader_interceptor_1.UploaderInterceptor; } });
-var uploader_pipe_1 = require("./pipes/uploader.pipe");
-Object.defineProperty(exports, "UploaderFileTypeValidator", { enumerable: true, get: function () { return uploader_pipe_1.UploaderFileTypeValidator; } });
 var uploader_util_1 = require("./utils/uploader.util");
 Object.defineProperty(exports, "editFileName", { enumerable: true, get: function () { return uploader_util_1.editFileName; } });
 Object.defineProperty(exports, "fileFilter", { enumerable: true, get: function () { return uploader_util_1.fileFilter; } });
