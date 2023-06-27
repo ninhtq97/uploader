@@ -18,7 +18,7 @@ const uploader_service_1 = require("../uploader.service");
 const uploader_util_1 = require("../utils/uploader.util");
 function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, acceptMimetype = Object.values(uploader_constant_1.MIME_TYPE)
     .map((e) => e)
-    .flat(), destination, filename, renameIfMimeWrong = true, }) {
+    .flat(), destination, filename, }) {
     let Interceptor = class Interceptor {
         constructor(uploaderService) {
             this.uploaderService = uploaderService;
@@ -41,8 +41,11 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
                 this.fileInterceptor = new ((0, platform_express_1.FileInterceptor)(fieldName, multerOptions))();
             }
         }
-        intercept(...args) {
-            return this.fileInterceptor.intercept(...args);
+        intercept(context, next) {
+            const ctx = context.switchToHttp();
+            const res = ctx.getRequest();
+            res.setHeader('x-accept-mime', acceptMimetype);
+            return this.fileInterceptor.intercept(context, next);
         }
     };
     Interceptor = __decorate([

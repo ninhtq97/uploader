@@ -1,4 +1,11 @@
-import { Injectable, NestInterceptor, Type, mixin } from '@nestjs/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+  Type,
+  mixin,
+} from '@nestjs/common';
 import {
   FileFieldsInterceptor,
   FileInterceptor,
@@ -8,6 +15,7 @@ import {
   MulterField,
   MulterOptions,
 } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
+import { Response } from 'express';
 import { DiskStorageOptions, diskStorage } from 'multer';
 import { MIME_TYPE } from '../constants/uploader.constant';
 import { UploaderService } from '../uploader.service';
@@ -41,7 +49,6 @@ export function UploaderInterceptor({
     .flat(),
   destination,
   filename,
-  renameIfMimeWrong = true,
 }: FilesInterceptorOptions): Type<NestInterceptor> {
   @Injectable()
   class Interceptor implements NestInterceptor {
@@ -79,8 +86,12 @@ export function UploaderInterceptor({
       }
     }
 
-    intercept(...args: Parameters<NestInterceptor['intercept']>) {
-      return this.fileInterceptor.intercept(...args);
+    intercept(context: ExecutionContext, next: CallHandler) {
+      const ctx = context.switchToHttp();
+      const res = ctx.getRequest<Response>();
+      res.setHeader('x-accept-mime', acceptMimetype);
+
+      return this.fileInterceptor.intercept(context, next);
     }
   }
   return mixin(Interceptor);

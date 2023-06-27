@@ -12,5 +12,5 @@ interface FilesInterceptorOptions {
     filename?: DiskStorageOptions['filename'];
     renameIfMimeWrong?: boolean;
 }
-export declare function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, acceptMimetype, destination, filename, renameIfMimeWrong, }: FilesInterceptorOptions): Type<NestInterceptor>;
+export declare function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, acceptMimetype, destination, filename, }: FilesInterceptorOptions): Type<NestInterceptor>;
 export {};
