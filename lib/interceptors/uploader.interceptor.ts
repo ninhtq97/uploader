@@ -15,7 +15,7 @@ import {
   MulterField,
   MulterOptions,
 } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { DiskStorageOptions, diskStorage } from 'multer';
 import { MIME_TYPE } from '../constants/uploader.constant';
 import { UploaderService } from '../uploader.service';
@@ -88,8 +88,13 @@ export function UploaderInterceptor({
 
     intercept(context: ExecutionContext, next: CallHandler) {
       const ctx = context.switchToHttp();
+      const req = ctx.getRequest<Request>();
       const res = ctx.getRequest<Response>();
-      res.setHeader('x-accept-mime', acceptMimetype);
+
+      console.log('Uploader Req:', req);
+      console.log('Uploader Res:', res);
+
+      // res.setHeader('x-accept-mime', acceptMimetype);
 
       return this.fileInterceptor.intercept(context, next);
     }

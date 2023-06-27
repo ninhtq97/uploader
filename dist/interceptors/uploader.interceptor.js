@@ -43,8 +43,10 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
         }
         intercept(context, next) {
             const ctx = context.switchToHttp();
+            const req = ctx.getRequest();
             const res = ctx.getRequest();
-            res.setHeader('x-accept-mime', acceptMimetype);
+            console.log('Uploader Req:', req);
+            console.log('Uploader Res:', res);
             return this.fileInterceptor.intercept(context, next);
         }
     };
