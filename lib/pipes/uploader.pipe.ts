@@ -25,6 +25,8 @@ export class UploaderFileTypeValidator extends FileValidator<UploaderFileTypeVal
   }
 
   async isValid<TFile extends IFile = any>(file?: TFile) {
+    console.log('Pipe File:', file);
+
     if (!this.validationOptions) return true;
 
     const parseFile: UploaderFile = file as any;
@@ -42,6 +44,8 @@ export class UploaderFileTypeValidator extends FileValidator<UploaderFileTypeVal
     //   file = { ...file, mimetype: mime, filename, path: path };
     // }
 
-    return !!file && 'mimetype' in file && this.acceptMimeType.includes(mime);
+    return (
+      !!file && 'mimetype' in file && parseFile.acceptMimeType.includes(mime)
+    );
   }
 }
