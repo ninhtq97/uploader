@@ -12,7 +12,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "prebuild": "rimraf ../build/dist",
+    "prebuild": "rimraf ./build/dist",
     "build": "tsc -p tsconfig.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
