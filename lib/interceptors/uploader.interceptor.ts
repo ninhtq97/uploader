@@ -95,7 +95,7 @@ export function UploaderInterceptor({
       const ctx = context.switchToHttp();
       const req = ctx.getRequest<Request>();
 
-      this.fileInterceptor.intercept(context, next);
+      await this.fileInterceptor.intercept(context, next);
 
       const { file } = req;
 
