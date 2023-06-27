@@ -6,43 +6,43 @@ $ npm i github:ninhtq97/nestjs-module-uploader
 
 # Module
 
-## Configuration
+- ## Configuration
 
-```ts
-import { UploaderModule } from '@nestjs-module/uploader';
+  ```ts
+  import { UploaderModule } from '@nestjs-module/uploader';
 
-@Module({
-  imports: [
-    UploaderModule.forRoot({
-      dest: './uploads',
-    }),
-    ...
-  ],
-  controllers: [AppController],
-  providers: [AppService],
-})
-export class AppModule {}
-```
-
-## Async Configuration
-
-```ts
-import { UploaderModule } from '@nestjs-module/uploader';
-
-@Module({
-  imports: [
-    UploaderModule.forRootAsync({
-      useFactory: () => ({
+  @Module({
+    imports: [
+      UploaderModule.forRoot({
         dest: './uploads',
       }),
-    }),
-    ...
-  ],
-  controllers: [AppController],
-  providers: [AppService],
-})
-export class AppModule {}
-```
+      ...
+    ],
+    controllers: [AppController],
+    providers: [AppService],
+  })
+  export class AppModule {}
+  ```
+
+- ## Async Configuration
+
+  ```ts
+  import { UploaderModule } from '@nestjs-module/uploader';
+
+  @Module({
+    imports: [
+      UploaderModule.forRootAsync({
+        useFactory: () => ({
+          dest: './uploads',
+        }),
+      }),
+      ...
+    ],
+    controllers: [AppController],
+    providers: [AppService],
+  })
+  export class AppModule {}
+  ```
 
 # Using
 
