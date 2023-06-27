@@ -1,11 +1,4 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
-  Type,
-  mixin,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, Type, mixin } from '@nestjs/common';
 import {
   FileFieldsInterceptor,
   FileInterceptor,
@@ -15,11 +8,7 @@ import {
   MulterField,
   MulterOptions,
 } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { Request } from 'express';
-import { fromBuffer } from 'file-type';
-import { rename } from 'fs/promises';
 import { DiskStorageOptions, diskStorage } from 'multer';
-import { basename, extname } from 'path';
 import { MIME_TYPE } from '../constants/uploader.constant';
 import { UploaderService } from '../uploader.service';
 import {
@@ -27,7 +16,6 @@ import {
   editFileName,
   fileFilter,
   makeDes,
-  readChunk,
 } from '../utils/uploader.util';
 
 interface FilesInterceptorOptions {
@@ -91,32 +79,8 @@ export function UploaderInterceptor({
       }
     }
 
-    async intercept(context: ExecutionContext, next: CallHandler) {
-      const ctx = context.switchToHttp();
-      const req = ctx.getRequest<Request>();
-
-      const intercept = await this.fileInterceptor.intercept(context, next);
-
-      const { file } = req;
-
-      const buffer = await readChunk(file.path, { length: 4100 });
-      const { ext, mime } = await fromBuffer(buffer);
-
-      if (renameIfMimeWrong) {
-        const name = basename(file.filename, extname(file.filename));
-        const filename = `${name}.${ext}`;
-        const path = `${file.destination}/${filename}`;
-
-        await rename(file.path, path);
-        req.file = { ...file, mimetype: mime, filename, path: path };
-      }
-
-      // if (!acceptMimetype.includes(mime)) {
-      //   await unlink(path);
-      //   throw new BadRequestException('Invalid original mime type');
-      // }
-
-      return intercept;
+    intercept(...args: Parameters<NestInterceptor['intercept']>) {
+      return this.fileInterceptor.intercept(...args);
     }
   }
   return mixin(Interceptor);
