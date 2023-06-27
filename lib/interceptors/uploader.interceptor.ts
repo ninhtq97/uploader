@@ -90,10 +90,7 @@ export function UploaderInterceptor({
       const ctx = context.switchToHttp();
       const req = ctx.getRequest<Request>();
 
-      console.log('Uploader Req:', req.headers);
-
       req.headers['x-accept-mime'] = acceptMimetype;
-
       return this.fileInterceptor.intercept(context, next);
     }
   }

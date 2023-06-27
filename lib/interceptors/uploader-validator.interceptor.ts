@@ -19,22 +19,11 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
       const ctx = context.switchToHttp();
       const req = ctx.getRequest<Request>();
 
-      console.log('Uploader Validator Req:', req.headers);
-
       const acceptMimetype = req.headers['x-accept-mime'];
       const { file } = req;
 
       const buffer = await readChunk(file.path, { length: 4100 });
       const { mime } = await fromBuffer(buffer);
-
-      // if (renameIfMimeWrong) {
-      //   const name = basename(file.filename, extname(file.filename));
-      //   const filename = `${name}.${ext}`;
-      //   const path = `${file.destination}/${filename}`;
-
-      //   await rename(file.path, path);
-      //   req.file = { ...file, mimetype: mime, filename, path: path };
-      // }
 
       if (!acceptMimetype.includes(mime)) {
         await unlink(file.path);
