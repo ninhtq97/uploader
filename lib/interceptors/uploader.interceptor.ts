@@ -103,11 +103,6 @@ export function UploaderInterceptor({
       const buffer = await readChunk(file.path, { length: 4100 });
       const { ext, mime } = await fromBuffer(buffer);
 
-      if (!acceptMimetype.includes(mime)) {
-        await unlink(file.path);
-        throw new BadRequestException('Invalid original mime type');
-      }
-
       if (renameIfMimeWrong) {
         const name = basename(file.filename, extname(file.filename));
         const filename = `${name}.${ext}`;
@@ -115,6 +110,11 @@ export function UploaderInterceptor({
 
         await rename(file.path, path);
         req.file = { ...file, mimetype: mime, filename, path: path };
+      }
+
+      if (!acceptMimetype.includes(mime)) {
+        await unlink(file.path);
+        throw new BadRequestException('Invalid original mime type');
       }
 
       return intercept;
