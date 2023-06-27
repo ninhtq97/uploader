@@ -13,6 +13,7 @@ exports.UploaderInterceptor = void 0;
 const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
+const rxjs_1 = require("rxjs");
 const uploader_constant_1 = require("../constants/uploader.constant");
 const uploader_service_1 = require("../uploader.service");
 const uploader_util_1 = require("../utils/uploader.util");
@@ -46,8 +47,10 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
             const req = ctx.getRequest();
             const intercept = await this.fileInterceptor.intercept(context, next);
             const { file } = req;
-            req.file = Object.assign(Object.assign({}, file), { acceptMimetype });
-            console.log('File:', req.file);
+            intercept.pipe((0, rxjs_1.tap)(() => {
+                req.file = Object.assign(Object.assign({}, file), { acceptMimetype });
+                console.log('File:', req.file);
+            }));
             return intercept;
         }
     };

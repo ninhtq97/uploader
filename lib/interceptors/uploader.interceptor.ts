@@ -17,6 +17,7 @@ import {
 } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { Request } from 'express';
 import { DiskStorageOptions, diskStorage } from 'multer';
+import { tap } from 'rxjs';
 import { MIME_TYPE } from '../constants/uploader.constant';
 import { UploaderService } from '../uploader.service';
 import {
@@ -92,10 +93,12 @@ export function UploaderInterceptor({
       const intercept = await this.fileInterceptor.intercept(context, next);
 
       const { file } = req;
-
-      req.file = { ...file, acceptMimetype } as any;
-
-      console.log('File:', req.file);
+      intercept.pipe(
+        tap(() => {
+          req.file = { ...file, acceptMimetype } as any;
+          console.log('File:', req.file);
+        }),
+      );
 
       return intercept;
     }
