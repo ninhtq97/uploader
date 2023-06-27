@@ -95,6 +95,8 @@ export function UploaderInterceptor({
 
       req.file = { ...file, acceptMimetype } as any;
 
+      console.log('File:', req.file);
+
       return intercept;
     }
   }

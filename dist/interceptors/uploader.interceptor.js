@@ -47,6 +47,7 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
             const intercept = await this.fileInterceptor.intercept(context, next);
             const { file } = req;
             req.file = Object.assign(Object.assign({}, file), { acceptMimetype });
+            console.log('File:', req.file);
             return intercept;
         }
     };
