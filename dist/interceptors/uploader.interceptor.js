@@ -45,8 +45,7 @@ function UploaderInterceptor({ fieldName, uploadFields, maxCount, path, limits, 
             const ctx = context.switchToHttp();
             const req = ctx.getRequest();
             const res = ctx.getRequest();
-            console.log('Uploader Req:', req);
-            console.log('Uploader Res:', res);
+            console.log('Uploader Req:', req.headers);
             return this.fileInterceptor.intercept(context, next);
         }
     };

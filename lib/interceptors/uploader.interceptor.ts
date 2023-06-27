@@ -91,8 +91,7 @@ export function UploaderInterceptor({
       const req = ctx.getRequest<Request>();
       const res = ctx.getRequest<Response>();
 
-      console.log('Uploader Req:', req);
-      console.log('Uploader Res:', res);
+      console.log('Uploader Req:', req.headers);
 
       // res.setHeader('x-accept-mime', acceptMimetype);
 
