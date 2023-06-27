@@ -1,5 +1,5 @@
 # compiled output
-/lib
+/build
 /node_modules
 
 # Logs
