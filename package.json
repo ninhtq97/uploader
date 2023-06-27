@@ -12,7 +12,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "prebuild": "rimraf dist",
+    "prebuild": "rimraf ../build/dist",
     "build": "tsc -p tsconfig.json",
     "deploy": "sh ./publish.sh",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
