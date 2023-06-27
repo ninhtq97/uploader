@@ -6,7 +6,7 @@ $ npm i github:ninhtq97/nestjs-module-uploader
 
 # Module
 
-- ## Configuration
+- Configuration
 
   ```ts
   import { UploaderModule } from '@nestjs-module/uploader';
@@ -24,7 +24,7 @@ $ npm i github:ninhtq97/nestjs-module-uploader
   export class AppModule {}
   ```
 
-- ## Async Configuration
+- Async Configuration
 
   ```ts
   import { UploaderModule } from '@nestjs-module/uploader';
