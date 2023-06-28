@@ -9,7 +9,8 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { fromBuffer } from 'file-type';
-import { unlink } from 'fs/promises';
+import { rename, unlink } from 'fs/promises';
+import { basename, extname } from 'path';
 import { UPLOADER_HEADERS } from '../constants/uploader.constant';
 import { readChunk } from '../utils/uploader.util';
 
@@ -21,17 +22,51 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
       const req = ctx.getRequest<Request>();
 
       const acceptMimetype = req.headers[UPLOADER_HEADERS.ACCEPT_MIME];
-      const { file } = req;
+      const { file, files } = req;
 
-      const buffer = await readChunk(file.path, { length: 4100 });
-      const { mime } = await fromBuffer(buffer);
+      if (file) {
+        await this.validateMime([file], [acceptMimetype].flat());
+      }
 
-      if (!acceptMimetype.includes(mime)) {
-        await unlink(file.path);
-        throw new BadRequestException('Invalid original mime type');
+      if (files) {
+        if (Array.isArray(files)) {
+          await this.validateMime(files, [acceptMimetype].flat());
+        } else {
+          await this.validateMime(
+            Object.values(files).flat(),
+            [acceptMimetype].flat(),
+          );
+        }
       }
 
       return next.handle();
+    }
+
+    private async validateMime(
+      files: Express.Multer.File[],
+      acceptMimetype: string[],
+    ) {
+      for (const file of files) {
+        const buffer = await readChunk(file.path, { length: 4100 });
+        const { ext, mime } = await fromBuffer(buffer);
+
+        if (!acceptMimetype.includes(mime)) {
+          for (const file of files) {
+            await unlink(file.path);
+          }
+
+          throw new BadRequestException('Invalid original mime type');
+        }
+
+        const name = basename(file.filename, extname(file.filename));
+        const filename = `${name}.${ext}`;
+        const path = `${file.destination}/${filename}`;
+
+        await rename(file.path, path);
+        file.mimetype = mime;
+        file.filename = filename;
+        file.path = path;
+      }
     }
   }
   return mixin(Interceptor);
