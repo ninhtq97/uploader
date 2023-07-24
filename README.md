@@ -97,7 +97,7 @@ $ npm i github:ninhtq97/nestjs-module-uploader
   ```ts
   @UseInterceptors(
     UploaderInterceptor({
-      uploadFields: [
+      fields: [
         { name: 'avatar', maxCount: 1 },
         { name: 'background', maxCount: 1 },
       ],
