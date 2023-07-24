@@ -28,7 +28,7 @@ import {
 
 interface FilesInterceptorOptions {
   fieldName?: string;
-  uploadFields?: MulterField[];
+  fields?: MulterField[];
   maxCount?: number;
   path?: string;
   limits?: MulterOptions['limits'];
@@ -40,7 +40,7 @@ interface FilesInterceptorOptions {
 
 export function UploaderInterceptor({
   fieldName,
-  uploadFields,
+  fields,
   maxCount,
   path,
   limits,
@@ -52,7 +52,7 @@ export function UploaderInterceptor({
 }: FilesInterceptorOptions): Type<NestInterceptor> {
   @Injectable()
   class Interceptor implements NestInterceptor {
-    fileInterceptor: NestInterceptor;
+    fI: NestInterceptor;
 
     constructor(private readonly uploaderService: UploaderService) {
       const filesDest = this.uploaderService.uploaderOptions.dest;
@@ -67,22 +67,12 @@ export function UploaderInterceptor({
         limits: limits,
       };
 
-      if (uploadFields) {
-        this.fileInterceptor = new (FileFieldsInterceptor(
-          uploadFields,
-          multerOptions,
-        ))();
+      if (fields) {
+        this.fI = new (FileFieldsInterceptor(fields, multerOptions))();
       } else if (maxCount) {
-        this.fileInterceptor = new (FilesInterceptor(
-          fieldName,
-          maxCount,
-          multerOptions,
-        ))();
+        this.fI = new (FilesInterceptor(fieldName, maxCount, multerOptions))();
       } else {
-        this.fileInterceptor = new (FileInterceptor(
-          fieldName,
-          multerOptions,
-        ))();
+        this.fI = new (FileInterceptor(fieldName, multerOptions))();
       }
     }
 
@@ -91,7 +81,7 @@ export function UploaderInterceptor({
       const req = ctx.getRequest<Request>();
 
       req.headers[UPLOADER_HEADERS.ACCEPT_MIME] = acceptMimetype;
-      return this.fileInterceptor.intercept(context, next);
+      return this.fI.intercept(context, next);
     }
   }
   return mixin(Interceptor);
