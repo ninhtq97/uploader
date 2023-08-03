@@ -37,10 +37,7 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
 
       return next.handle().pipe(
         catchError(async (err) => {
-          for (const file of arrFiles) {
-            await unlink(file.path);
-          }
-
+          for (const file of arrFiles) await unlink(file.path);
           return throwError(() => err);
         }),
       );
@@ -55,10 +52,7 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
         const { ext, mime } = await fromBuffer(buffer);
 
         if (!acceptMimetype.includes(mime)) {
-          // for (const file of files) {
-          //   await unlink(file.path);
-          // }
-
+          for (const file of files) await unlink(file.path);
           throw new BadRequestException('Invalid original mime type');
         }
 
