@@ -11,6 +11,7 @@ import { Request } from 'express';
 import { fromBuffer } from 'file-type';
 import { rename, unlink } from 'fs/promises';
 import { basename, extname } from 'path';
+import { catchError, throwError } from 'rxjs';
 import { UPLOADER_HEADERS } from '../constants/uploader.constant';
 import { readChunk } from '../utils/uploader.util';
 
@@ -24,22 +25,27 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
       const acceptMimetype = req.headers[UPLOADER_HEADERS.ACCEPT_MIME];
       const { file, files } = req;
 
-      if (file) {
-        await this.validateMime([file], [acceptMimetype].flat());
-      }
+      let arrFiles = [];
+
+      if (file) arrFiles = [file];
 
       if (files) {
-        if (Array.isArray(files)) {
-          await this.validateMime(files, [acceptMimetype].flat());
-        } else {
-          await this.validateMime(
-            Object.values(files).flat(),
-            [acceptMimetype].flat(),
-          );
-        }
+        arrFiles = Array.isArray(files) ? files : Object.values(files).flat();
       }
 
-      return next.handle();
+      await this.validateMime(arrFiles, [acceptMimetype].flat());
+
+      return next.handle().pipe(
+        catchError(async (err) => {
+          console.log('ERROR:', err);
+
+          for (const file of arrFiles) {
+            await unlink(file.path);
+          }
+
+          return throwError(() => err);
+        }),
+      );
     }
 
     private async validateMime(
@@ -51,9 +57,9 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
         const { ext, mime } = await fromBuffer(buffer);
 
         if (!acceptMimetype.includes(mime)) {
-          for (const file of files) {
-            await unlink(file.path);
-          }
+          // for (const file of files) {
+          //   await unlink(file.path);
+          // }
 
           throw new BadRequestException('Invalid original mime type');
         }
