@@ -37,8 +37,6 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
 
       return next.handle().pipe(
         catchError(async (err) => {
-          console.log('ERROR:', err);
-
           for (const file of arrFiles) {
             await unlink(file.path);
           }
