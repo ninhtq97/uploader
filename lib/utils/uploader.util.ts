@@ -1,10 +1,8 @@
+import { BadRequestException } from '@nestjs/common';
 import { Request } from 'express';
-import { promises as fsPromises } from 'fs';
+import { mkdir, open, unlink } from 'fs/promises';
 import { customAlphabet, urlAlphabet } from 'nanoid';
 import { basename, dirname, extname, join, resolve } from 'path';
-
-import { BadRequestException } from '@nestjs/common';
-import { open } from 'fs/promises';
 
 export async function readChunk(
   filePath: string,
@@ -79,7 +77,12 @@ export const makeDes = (path: string) => {
     file: Express.Multer.File,
     cb: (error: Error, destination: string) => void,
   ) => {
-    await fsPromises.mkdir(resolve(join('.', path)), { recursive: true });
+    await mkdir(resolve(join('.', path)), { recursive: true });
     cb(null, path);
   };
+};
+
+export const removeFiles = async (files: Express.Multer.File[]) => {
+  for (const file of files) await unlink(file.path);
+  return true;
 };
