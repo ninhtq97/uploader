@@ -111,3 +111,11 @@ $ npm i github:ninhtq97/nestjs-module-uploader
     ...
   }
   ```
+
+- **Required Files**
+  ```ts
+  @UseInterceptors(
+   ...
+   UploaderRequiredInterceptor()
+  )
+  ```
