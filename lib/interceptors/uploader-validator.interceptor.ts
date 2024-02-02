@@ -11,7 +11,7 @@ import { Request } from 'express';
 import { fromBuffer } from 'file-type';
 import { rename } from 'fs/promises';
 import { basename, extname } from 'path';
-import { catchError, throwError } from 'rxjs';
+import { catchError } from 'rxjs';
 import { UPLOADER_HEADERS } from '../constants/uploader.constant';
 import { readChunk, removeFiles } from '../utils/uploader.util';
 
@@ -36,7 +36,7 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
       return next.handle().pipe(
         catchError(async (err) => {
           await removeFiles(arrFiles);
-          return throwError(() => err);
+          throw err;
         }),
       );
     }
