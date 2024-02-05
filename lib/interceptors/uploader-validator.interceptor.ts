@@ -11,7 +11,7 @@ import { Request } from 'express';
 import { fromBuffer } from 'file-type';
 import { rename } from 'fs/promises';
 import { basename, extname } from 'path';
-import { catchError } from 'rxjs';
+import { catchError, tap, throwError } from 'rxjs';
 import { UPLOADER_HEADERS } from '../constants/uploader.constant';
 import { readChunk, removeFiles } from '../utils/uploader.util';
 
@@ -34,9 +34,13 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
       await this.validateMime(arrFiles, [acceptMimetype].flat());
 
       return next.handle().pipe(
-        catchError(async (err) => {
-          await removeFiles(arrFiles);
-          throw err;
+        tap({
+          error: async () => {
+            await removeFiles(arrFiles);
+          },
+        }),
+        catchError((err) => {
+          return throwError(() => err);
         }),
       );
     }
