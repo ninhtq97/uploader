@@ -4,23 +4,21 @@ import { mkdir, open, unlink } from 'fs/promises';
 import { customAlphabet, urlAlphabet } from 'nanoid';
 import { basename, dirname, extname, join, resolve } from 'path';
 
-export async function readChunk(
-  filePath: string,
-  { length, startPosition = undefined },
-) {
+export type IReadChunkOptions = { length: number; position?: number };
+
+export async function readChunk(filePath: string, options: IReadChunkOptions) {
   const fileDescriptor = await open(filePath, 'r');
 
   try {
     const result = await fileDescriptor.read({
-      buffer: Buffer.alloc(length),
-      length,
-      position: startPosition,
+      buffer: Buffer.alloc(options.length),
+      ...options,
     });
 
     const bytesRead = result.bytesRead;
     let buffer = result.buffer;
 
-    if (bytesRead < length) {
+    if (bytesRead < options.length) {
       buffer = buffer.subarray(0, bytesRead);
     }
 
