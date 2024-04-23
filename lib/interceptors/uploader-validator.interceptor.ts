@@ -3,6 +3,7 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
+  Logger,
   NestInterceptor,
   Type,
   mixin,
@@ -51,7 +52,10 @@ export function UploaderValidatorInterceptor(): Type<NestInterceptor> {
     ) {
       for (const file of files) {
         const buffer = await readChunk(file.path, { length: 4100 });
-        const { ext, mime } = await fromBuffer(buffer);
+        const { ext, mime } = await fromBuffer(buffer).catch((err) => {
+          Logger.error(`Invalid file ${file.filename}:`, JSON.stringify(err));
+          throw new BadRequestException('Invalid file');
+        });
 
         if (!acceptMimetype.includes(mime)) {
           await removeFiles(files);
