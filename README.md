@@ -1,7 +1,7 @@
 # Installation
 
 ```bash
-$ npm i github:ninhtq97/nestjs-module-uploader
+$ npm i github:ninhtq97/uploader-compiled
 ```
 
 # Module
